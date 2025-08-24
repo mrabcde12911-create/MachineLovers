@@ -1,35 +1,359 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>College Infrastructure</title>
-</head>
-<body>
-  <h2>My College Infrastructure</h2>
-  <table border="1" cellpadding="10" cellspacing="0">
-    <tr>
-      <th>Building</th>
-      <th>Description</th>
-    </tr>
-    <tr>
-      <td>Main Block</td>
-      <td>Administrative offices, Principal’s office, and Reception.</td>
-    </tr>
-    <tr>
-      <td>Library</td>
-      <td>Collection of books, digital resources, and reading area.</td>
-    </tr>
-    <tr>
-      <td>Computer Lab</td>
-      <td>Well-equipped with latest computers and internet access.</td>
-    </tr>
-    <tr>
-      <td>Auditorium</td>
-      <td>Used for seminars, events, and cultural activities.</td>
-    </tr>
-    <tr>
-      <td>Sports Complex</td>
-      <td>Grounds for football, cricket, and indoor sports facilities.</td>
-    </tr>
-  </table>
-</body>
-</html>
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=0.9">
+     <title>Unit Converter</title>
+     <style>
+         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+
+         body {
+             font-family: 'Poppins', sans-serif;
+             display: flex;
+             flex-direction: column;
+             justify-content: flex-start;
+             align-items: center;
+             min-height: 100vh;
+             margin: 0;
+             background: linear-gradient(135deg, #1f2833, #34495e);
+             color: #ecf0f1;
+             padding: 30px;
+             box-sizing: border-box;
+         }
+
+         .converter-container {
+             background-color: #2c3e50;
+             padding: 30px;
+             border-radius: 15px;
+             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+             text-align: center;
+             width: 95%;
+             max-width: 600px;
+             border: 2px solid #3498db;
+             margin-bottom: 30px;
+         }
+
+         h1 {
+             color: #3498db;
+             margin-bottom: 20px;
+             font-size: 2em;
+             letter-spacing: 0.8px;
+         }
+
+         .input-group {
+             margin-bottom: 15px;
+             text-align: left;
+         }
+
+         label {
+             display: block;
+             margin-bottom: 6px;
+             font-weight: bold;
+             color: #bdc3c7;
+             font-size: 0.95em;
+         }
+
+         input, select {
+             width: calc(100% - 22px);
+             padding: 10px;
+             border: 1px solid #7f8c8d;
+             border-radius: 6px;
+             background-color: #34495e;
+             color: #ecf0f1;
+             font-size: 0.95em;
+             transition: all 0.3s ease;
+         }
+
+         input:focus, select:focus {
+             outline: none;
+             border-color: #3498db;
+             box-shadow: 0 0 6px rgba(52, 152, 219, 0.5);
+         }
+
+         .convert-btn {
+             background-color: #3498db;
+             color: white;
+             padding: 12px 25px;
+             border: none;
+             border-radius: 6px;
+             cursor: pointer;
+             font-size: 1em;
+             font-weight: bold;
+             transition: background-color 0.3s ease, transform 0.2s ease;
+         }
+
+         .convert-btn:hover {
+             background-color: #2980b9;
+             transform: translateY(-1px);
+         }
+
+         .result {
+             margin-top: 20px;
+             padding: 12px;
+             background-color: #2c3e50;
+             border-radius: 6px;
+             font-size: 1.1em;
+             font-weight: bold;
+             color: #2ecc71;
+             border: 2px solid #2ecc71;
+             display: none;
+         }
+
+         .loading-spinner {
+             border: 5px solid rgba(0, 0, 0, 0.1);
+             border-top: 5px solid #3498db;
+             border-radius: 50%;
+             width: 30px;
+             height: 30px;
+             animation: spin 1s linear infinite;
+             margin: 15px auto;
+             display: none;
+         }
+
+         @keyframes spin {
+             0% { transform: rotate(0deg); }
+             100% { transform: rotate(360deg); }
+         }
+
+         .developed-by {
+             margin-top: 40px;
+             font-size: 0.8em;
+             color: #7f8c8d;
+         }
+     </style>
+ </head>
+ <body>
+     <div class="converter-container">
+         <h1>Unit Converter ⚙️</h1>
+         <div class="input-group">
+             <label for="value">Value:</label>
+             <input type="number" id="value" placeholder="Enter value..." min="0" step="any">
+         </div>
+         <div class="input-group">
+             <label for="type">Category:</label>
+             <select id="type" onchange="updateUnits()">
+                 <option value="length">Length</option>
+                 <option value="area">Area</option>
+                 <option value="volume">Volume</option>
+                 <option value="temperature">Temperature</option>
+             </select>
+         </div>
+         <div class="input-group">
+             <label for="fromUnit">From:</label>
+             <select id="fromUnit"></select>
+         </div>
+         <div class="input-group">
+             <label for="toUnit">To:</label>
+             <select id="toUnit"></select>
+         </div>
+         <button class="convert-btn" onclick="convert()">Convert</button>
+         <div class="loading-spinner" id="loading"></div>
+         <div class="result" id="resultDiv"></div>
+     </div>
+     <div class="developed-by">Developed by Lekhraj Vishwakarma</div>
+
+     <script>
+         const lengthUnits = ['meters', 'kilometers', 'miles', 'feet', 'inches', 'centimeters'];
+         const areaUnits = ['square meters', 'square kilometers', 'square miles', 'square feet', 'square inches', 'hectares', 'acres'];
+         const volumeUnits = ['cubic meters', 'cubic kilometers', 'cubic miles', 'cubic feet', 'cubic inches', 'liters', 'milliliters', 'gallons (US)'];
+         const temperatureUnits = ['Celsius', 'Fahrenheit', 'Kelvin'];
+
+         const fromUnitSelect = document.getElementById('fromUnit');
+         const toUnitSelect = document.getElementById('toUnit');
+         const typeSelect = document.getElementById('type');
+         const resultDiv = document.getElementById('resultDiv');
+         const loadingDiv = document.getElementById('loading');
+
+         function populateUnits(units) {
+             fromUnitSelect.innerHTML = '';
+             toUnitSelect.innerHTML = '';
+             units.forEach(unit => {
+                 const option1 = document.createElement('option');
+                 option1.value = unit.toLowerCase().replace(/ /g, '_');
+                 option1.innerText = unit;
+                 fromUnitSelect.appendChild(option1);
+
+                 const option2 = document.createElement('option');
+                 option2.value = unit.toLowerCase().replace(/ /g, '_');
+                 option2.innerText = unit;
+                 toUnitSelect.appendChild(option2);
+             });
+         }
+
+         function updateUnits() {
+             const selectedType = typeSelect.value;
+             switch (selectedType) {
+                 case 'length':
+                     populateUnits(lengthUnits);
+                     break;
+                 case 'area':
+                     populateUnits(areaUnits);
+                     break;
+                 case 'volume':
+                     populateUnits(volumeUnits);
+                     break;
+                 case 'temperature':
+                     populateUnits(temperatureUnits);
+                     break;
+                 default:
+                     populateUnits(lengthUnits);
+             }
+         }
+
+         function showLoading() {
+             loadingDiv.style.display = 'block';
+             resultDiv.style.display = 'none';
+         }
+
+         function hideLoading() {
+             loadingDiv.style.display = 'none';
+         }
+
+         function convert() {
+             showLoading();
+             setTimeout(() => {
+                 const value = parseFloat(document.getElementById('value').value);
+                 const fromUnit = document.getElementById('fromUnit').value;
+                 const toUnit = document.getElementById('toUnit').value;
+                 const type = document.getElementById('type').value;
+
+                 if (isNaN(value)) {
+                     resultDiv.innerText = 'Please enter a valid number.';
+                     resultDiv.style.color = '#e74c3c';
+                     resultDiv.style.borderColor = '#e74c3c';
+                     resultDiv.style.display = 'block';
+                     hideLoading();
+                     return;
+                 }
+
+                 let result;
+
+                 switch (type) {
+                     case 'length':
+                         result = convertLength(value, fromUnit, toUnit);
+                         break;
+                     case 'area':
+                         result = convertArea(value, fromUnit, toUnit);
+                         break;
+                     case 'volume':
+                         result = convertVolume(value, fromUnit, toUnit);
+                         break;
+                     case 'temperature':
+                         result = convertTemperature(value, fromUnit, toUnit);
+                         break;
+                     default:
+                         result = 'Invalid conversion type.';
+                 }
+
+                 if (typeof result === 'number') {
+                     resultDiv.innerText = `${value} ${fromUnit.replace(/_/g, ' ')} = ${result.toFixed(4)} ${toUnit.replace(/_/g, ' ')}`;
+                     resultDiv.style.color = '#2ecc71';
+                     resultDiv.style.borderColor = '#2ecc71';
+                 } else {
+                     resultDiv.innerText = result;
+                     resultDiv.style.color = '#e74c3c';
+                     resultDiv.style.borderColor = '#e74c3c';
+                 }
+                 resultDiv.style.display = 'block';
+                 hideLoading();
+             }, 800); // Simulate loading time
+         }
+
+         function convertLength(value, from, to) {
+             let meters;
+             switch (from) {
+                 case 'meters': meters = value; break;
+                 case 'kilometers': meters = value * 1000; break;
+                 case 'miles': meters = value * 1609.34; break;
+                 case 'feet': meters = value * 0.3048; break;
+                 case 'inches': meters = value * 0.0254; break;
+                 case 'centimeters': meters = value * 0.01; break;
+                 default: return 'Invalid from unit';
+             }
+
+             switch (to) {
+                 case 'meters': return meters;
+                 case 'kilometers': return meters / 1000;
+                 case 'miles': return meters / 1609.34;
+                 case 'feet': return meters / 0.3048;
+                 case 'inches': return meters / 0.0254;
+                 case 'centimeters': return meters / 0.01;
+                 default: return 'Invalid to unit';
+             }
+         }
+
+         function convertArea(value, from, to) {
+             let squareMeters;
+             switch (from) {
+                 case 'square_meters': squareMeters = value; break;
+                 case 'square_kilometers': squareMeters = value * 1000000; break;
+                 case 'square_miles': squareMeters = value * 2589988.11; break;
+                 case 'square_feet': squareMeters = value * 0.092903; break;
+                 case 'square_inches': squareMeters = value * 0.00064516; break;
+                 case 'hectares': squareMeters = value * 10000; break;
+                 case 'acres': squareMeters = value * 4046.86; break;
+                 default: return 'Invalid from unit';
+             }
+
+             switch (to) {
+                 case 'square_meters': return squareMeters;
+                 case 'square_kilometers': return squareMeters / 1000000;
+                 case 'square_miles': return squareMeters / 2589988.11;
+                 case 'square_feet': return squareMeters / 0.092903;
+                 case 'square_inches': return squareMeters / 0.00064516;
+                 case 'hectares': return squareMeters / 10000;
+                 case 'acres': return squareMeters / 4046.86;
+                 default: return 'Invalid to unit';
+             }
+         }
+
+         function convertVolume(value, from, to) {
+             let cubicMeters;
+             switch (from) {
+                 case 'cubic_meters': cubicMeters = value; break;
+                 case 'cubic_kilometers': cubicMeters = value * 1e+9; break;
+                 case 'cubic_miles': cubicMeters = value * 4.168e+9; break;
+                 case 'cubic_feet': cubicMeters = value * 0.028317; break;
+                 case 'cubic_inches': cubicMeters = value * 1.6387e-5; break;
+                 case 'liters': cubicMeters = value / 1000; break;
+                 case 'milliliters': cubicMeters = value / 1e+6; break;
+                 case 'gallons_(us)': cubicMeters = value * 0.00378541; break;
+                 default: return 'Invalid from unit';
+             }
+
+             switch (to) {
+                 case 'cubic_meters': return cubicMeters;
+                 case 'cubic_kilometers': return cubicMeters / 1e+9;
+                 case 'cubic_miles': return cubicMeters / 4.168e+9;
+                 case 'cubic_feet': return cubicMeters / 0.028317;
+                 case 'cubic_inches': return cubicMeters / 1.6387e-5;
+                 case 'liters': return cubicMeters * 1000;
+                 case 'milliliters': return cubicMeters * 1e+6;
+                 case 'gallons_(us)': return cubicMeters / 0.00378541;
+                 default: return 'Invalid to unit';
+             }
+         }
+
+         function convertTemperature(value, from, to) {
+             if (from === to) return value;
+
+             let celsius;
+             switch (from) {
+                 case 'celsius': celsius = value; break;
+                 case 'fahrenheit': celsius = (value - 32) * (5 / 9); break;
+                 case 'kelvin': celsius = value - 273.15; break;
+                 default: return 'Invalid from unit';
+             }
+
+             switch (to) {
+                 case 'celsius': return celsius;
+                 case 'fahrenheit': return (celsius * (9 / 5)) + 32;
+                 case 'kelvin': return celsius + 273.15;
+                 default: return 'Invalid to unit';
+             }
+         }
+
+         updateUnits(); // Initial population of units
+     </script>
+ </body>
+ </html>
